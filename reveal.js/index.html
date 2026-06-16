@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
+
+  <title>Linux-Dateisysteme und Mounting</title>
+
+  <link rel="stylesheet" href="dist/reset.css" />
+  <link rel="stylesheet" href="dist/reveal.css" />
+  <link rel="stylesheet" href="dist/theme/black.css" />
+  <link rel="stylesheet" href="dist/plugin/highlight/monokai.css" />
+
+  <style>
+    :root {
+      --r-background-color: #0f172a;
+      --r-main-color: #e2e8f0;
+      --r-heading-color: #38bdf8;
+      --r-link-color: #22d3ee;
+      --r-selection-background-color: #0891b2;
+      --r-main-font-size: 34px;
+      --r-heading-text-transform: none;
+    }
+
+    .reveal h1,
+    .reveal h2,
+    .reveal h3 {
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    }
+
+    .reveal section {
+      text-align: left;
+    }
+
+    .reveal section.center {
+      text-align: center;
+    }
+
+    .accent {
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
+    .important {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    .soft-box {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 20px 28px;
+      margin-top: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    }
+
+    .reveal ul li,
+    .reveal ol li {
+      margin-bottom: 14px;
+    }
+
+    .reveal pre {
+      border-radius: 16px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      font-size: 0.75em;
+    }
+
+    .small {
+      font-size: 0.8em;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .command {
+      color: #67e8f9;
+      font-family: monospace;
+      font-weight: bold;
+    }
+
+    .highlight-line {
+      color: #facc15;
+      font-weight: bold;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.8em;
+    }
+
+    th,
+    td {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(56, 189, 248, 0.18);
+      color: #7dd3fc;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <section class="center" data-transition="zoom">
+        <h1>Linux-Dateisysteme<br>und Mounting</h1>
+        <div class="soft-box">
+          <p>Fachvortrag</p>
+          <p><span class="accent">David Javidpour</span></p>
+        </div>
+      </section>
+
+      <section data-auto-animate>
+        <h2>Agenda</h2>
+        <div class="soft-box">
+          <ul>
+            <li class="fragment fade-up">Was ist ein Dateisystem?</li>
+            <li class="fragment fade-up">Linux-Verzeichnisstruktur</li>
+            <li class="fragment fade-up">Filesystem Hierarchy Standard</li>
+            <li class="fragment fade-up">Wichtige Dateisystemtypen</li>
+            <li class="fragment fade-up">Mounting-Konzept</li>
+            <li class="fragment fade-up">/etc/fstab</li>
+            <li class="fragment fade-up">Praxisdemo auf dem Raspberry Pi</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Was ist ein Dateisystem?</h2>
+        <div class="soft-box">
+          <p>Ein Dateisystem organisiert Daten auf einem Datenträger.</p>
+          <ul>
+            <li class="fragment fade-up">Speicherung von Dateien</li>
+            <li class="fragment fade-up">Verwaltung von Verzeichnissen</li>
+            <li class="fragment fade-up">Zuordnung von Speicherblöcken</li>
+            <li class="fragment fade-up">Verwaltung von Zugriffsrechten</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Linux-Verzeichnisstruktur</h2>
+        <table>
+          <tr>
+            <th>Verzeichnis</th>
+            <th>Bedeutung</th>
+          </tr>
+          <tr class="fragment fade-up">
+            <td><span class="command">/</span></td>
+            <td>Root-Verzeichnis</td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td><span class="command">/home</span></td>
+            <td>Benutzerdateien</td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td><span class="command">/etc</span></td>
+            <td>Konfigurationsdateien</td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td><span class="command">/var</span></td>
+            <td>Logs und variable Daten</td>
+          </tr>
+          <tr class="fragment fade-up">
+            <td><span class="command">/mnt</span></td>
+            <td>Temporäre Mountpunkte</td>
+          </tr>
+        </table>
+      </section>
+
+      <section>
+        <h2>Filesystem Hierarchy Standard</h2>
+        <div class="soft-box">
+          <p>Der <span class="important">FHS</span> legt fest, wie Linux-Verzeichnisse strukturiert sein sollen.</p>
+          <ul>
+            <li class="fragment fade-up">einheitlicher Aufbau</li>
+            <li class="fragment fade-up">leichtere Administration</li>
+            <li class="fragment fade-up">Programme finden Dateien an erwarteten Orten</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Wichtige Dateisystemtypen</h2>
+        <div class="two-columns">
+          <div class="soft-box fragment fade-right">
+            <h3>ext4</h3>
+            <ul class="small">
+              <li>weit verbreitet</li>
+              <li>stabil</li>
+              <li>Standard bei vielen Linux-Systemen</li>
+            </ul>
+          </div>
+          <div class="soft-box fragment fade-left">
+            <h3>XFS</h3>
+            <ul class="small">
+              <li>gute Performance</li>
+              <li>oft im Serverbereich</li>
+              <li>gut für große Datenmengen</li>
+            </ul>
+          </div>
+        </div>
+        <div class="soft-box fragment fade-up">
+          <h3>Btrfs</h3>
+          <ul class="small">
+            <li>modernes Dateisystem</li>
+            <li>Snapshots möglich</li>
+            <li>mehr Funktionen, aber komplexer</li>
+          </ul>
+        </div>
+      </section>
+
+      <section data-auto-animate>
+        <h2>Das Mounting-Konzept</h2>
+        <div class="soft-box">
+          <p>Linux verwendet <span class="important">keine Laufwerksbuchstaben</span> wie Windows.</p>
+          <p class="fragment fade-up">Datenträger werden in den Verzeichnisbaum eingebunden.</p>
+          <p class="fragment fade-up">Das nennt man <span class="accent">Mounten</span>.</p>
+        </div>
+      </section>
+
+      <section data-auto-animate>
+        <h2>Das Mounting-Konzept</h2>
+        <div class="soft-box">
+          <p>Beispiel für einen Mountpunkt:</p>
+          <pre><code>/mnt/daten</code></pre>
+          <p class="fragment fade-up">Danach ist das Dateisystem über diesen Pfad erreichbar.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Wichtige Linux-Befehle</h2>
+        <pre><code class="language-bash">lsblk
+df -h
+mount
+umount
+blkid</code></pre>
+
+        <div class="soft-box small">
+          <ul>
+            <li class="fragment fade-up"><span class="command">lsblk</span> → Geräte und Partitionen anzeigen</li>
+            <li class="fragment fade-up"><span class="command">df -h</span> → Speicherplatz anzeigen</li>
+            <li class="fragment fade-up"><span class="command">mount</span> → Dateisystem einhängen</li>
+            <li class="fragment fade-up"><span class="command">umount</span> → Dateisystem aushängen</li>
+            <li class="fragment fade-up"><span class="command">blkid</span> → UUID und Dateisystemtyp anzeigen</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Beispiel: manuelles Mounten</h2>
+        <pre><code class="language-bash">sudo mkdir /mnt/daten
+sudo mount /dev/sdb1 /mnt/daten
+ls /mnt/daten
+sudo umount /mnt/daten</code></pre>
+
+        <div class="soft-box">
+          <p class="fragment fade-up">Zuerst wird ein <span class="accent">Mountpunkt</span> erstellt.</p>
+          <p class="fragment fade-up">Danach wird die Partition dort eingebunden.</p>
+        </div>
+      </section>
+
+      <section data-auto-animate>
+        <h2>/etc/fstab</h2>
+        <div class="soft-box">
+          <p>Die Datei <span class="command">/etc/fstab</span> legt fest, welche Dateisysteme beim Start automatisch gemountet werden.</p>
+        </div>
+      </section>
+
+      <section data-auto-animate>
+        <h2>/etc/fstab</h2>
+        <pre><code class="language-bash">UUID=1234-5678  /mnt/daten  ext4  defaults  0  2</code></pre>
+        <div class="soft-box small">
+          <p class="fragment fade-up"><span class="highlight-line">UUID</span> = eindeutige Gerätekennung</p>
+          <p class="fragment fade-up"><span class="highlight-line">/mnt/daten</span> = Mountpunkt</p>
+          <p class="fragment fade-up"><span class="highlight-line">ext4</span> = Dateisystemtyp</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Warum UUID statt /dev/sdb1?</h2>
+        <div class="soft-box">
+          <ul>
+            <li class="fragment fade-up">Gerätenamen können sich ändern</li>
+            <li class="fragment fade-up">UUID ist eindeutig und stabil</li>
+            <li class="fragment fade-up">dadurch weniger Fehler beim Booten</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Praxisdemo auf dem Raspberry Pi</h2>
+        <pre><code class="language-bash">lsblk
+lsblk -f
+df -h
+mount
+cat /etc/fstab</code></pre>
+
+        <div class="soft-box">
+          <p class="fragment fade-up">Damit zeige ich die Geräte, Dateisysteme und Mountpunkte auf einem echten Linux-System.</p>
+        </div>
+      </section>
+
+      <section>
+        <h2>Typische Fehler</h2>
+        <div class="soft-box">
+          <ul>
+            <li class="fragment fade-up">falscher Mountpunkt</li>
+            <li class="fragment fade-up">Tippfehler in <span class="command">/etc/fstab</span></li>
+            <li class="fragment fade-up">falscher Dateisystemtyp</li>
+            <li class="fragment fade-up">Partition ist noch in Benutzung</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2>Fazit</h2>
+        <div class="soft-box">
+          <ul>
+            <li class="fragment fade-up">Linux nutzt einen einheitlichen Verzeichnisbaum</li>
+            <li class="fragment fade-up">Dateisysteme organisieren Daten auf Datenträgern</li>
+            <li class="fragment fade-up">Datenträger werden gemountet</li>
+            <li class="fragment fade-up"><span class="command">/etc/fstab</span> automatisiert das Mounten</li>
+            <li class="fragment fade-up">Das Thema ist zentral für Linux-Administration</li>
+          </ul>
+        </div>
+      </section>
+
+<section data-transition="fade">
+  <h2>Quellen / Literatur</h2>
+
+  <div class="soft-box small">
+    <ul>
+      <li>
+        Linux Foundation – Filesystem Hierarchy Standard<br>
+        <a href="https://www.linuxfoundation.org" target="_blank">
+          https://www.linuxfoundation.org
+        </a>
+      </li>
+
+      <li>
+        Ubuntu Dokumentation (Dateisysteme, Mounting, Verzeichnisstruktur)<br>
+        <a href="https://help.ubuntu.com" target="_blank">
+          https://help.ubuntu.com
+        </a>
+      </li>
+
+      <li>
+        Linux Manpages: mount(8), fstab(5)
+      </li>
+
+      <li>
+        Eigene Praxis: Tests auf dem Raspberry Pi
+      </li>
+    </ul>
+  </div>
+</section>
+
+<section class="center" data-transition="zoom">
+  <h2>Vielen Dank fürs Zuhören</h2>
+  <div class="soft-box">
+    <p>Fragen?</p>
+  </div>
+</section>
+
+    </div>
+  </div>
+
+
+  <script src="dist/reveal.js"></script>
+  <script src="dist/plugin/notes.js"></script>
+  <script src="dist/plugin/markdown.js"></script>
+  <script src="dist/plugin/highlight.js"></script>
+
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      transition: 'fade',
+      backgroundTransition: 'slide',
+      controls: true,
+      progress: true,
+      center: true,
+      plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+    });
+  </script>
+</body>
+</html>

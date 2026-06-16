@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Übung: Tier-Profilkarte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4; 
+            padding: 40px;
+           
+        }
+
+
+
+        /* 1. KARTE
+           - Hintergrundfarbe: Weiß. ja
+           - Breite: Fest auf 300px. ja 
+           - Rahmen: 1px dick, durchgezogen (solid), hellgrau (#ccc). ja 
+           - Text-Ausrichtung: Alles zentriert. ja
+           - Innenabstand (Padding): 20px zu allen Seiten. ja 
+           - Ecken: Leicht abgerundet (15px). ja 
+        */
+        .card {
+
+            border: 1px solid lightgreen;
+            width: 300px ;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            
+            
+        }
+
+
+        /* 2. PROFILBILD
+           - Das Bild ist quadratisch (150x150px). ja 
+           - WICHTIG: Es soll KREISRUND sein! ja
+           - Abstand nach unten zum Text: 15px. ja
+           - Optional: Ein dünner Rahmen um das Bild. ja
+        */
+        .avatar {
+            width: 150px;
+            height: 150px;
+            object-fit: cover; /* Verhindert, dass das Bild verzerrt wird */
+            border-radius: 50px;
+            padding-bottom: 15px;
+            
+        }
+
+
+        /* 3. NAME
+           - Schriftart: sans-serif. ja
+           - Text-Stil: Alles in GROSSBUCHSTABEN. ja
+           - Farbe: Dunkelgrau (#333). ja
+           - Abstand (Margin) oben: 0. ja 
+        */
+        .tier-name {
+
+            font-family: Arial, sans-serif;
+            background-color: #333; 
+            padding: 40px;
+            margin:0px;
+            text-transform: uppercase;
+	    border-radius: 50px;
+
+        }
+
+
+        /* 4. BUTTON
+           - Hintergrund: Ein freundliches Orange (z.B. coral). ja
+           - Textfarbe: Weiß. ja
+           - Keine Unterstreichung! ja
+           - Innenabstand: Oben/Unten 10px, Links/Rechts 20px. ja
+           - Ecken: Abgerundet (5px) oder Pillenform (20px). ja
+        */
+        .btn {
+            /* Damit Padding bei einem Link funktioniert */
+            display: inline-block; 
+            background-color: coral; 
+            padding: 10px;
+            padding-right: 20px;
+            padding-left: 20px;
+            border-radius: 5px;
+	    text-decoration: none;
+
+        }
+
+	.btn:hover{
+
+	    background-color:rgba(255, 127, 80, 0.832);	
+
+	}
+
+
+        /* 5. INTERAKTION
+           - Interaktion, wenn Maus über dem Objekt. ja
+           - Einen Schatten hinzufügen. ja
+           - Leichte Änderung der Hintergrundfarbe. ja
+        */
+        .card:hover {
+
+            box-shadow: 5px 5px 15px 5px #000000;
+            background-color: #f4f4f4d8; 
+		
+        }
+
+
+        /* 6. NAVIGATIONS-LINK
+           - Farbe: Grau (#888). ja
+           - Keine Unterstreichung. ja 
+           - Schriftgröße: Klein (12px). ja
+           - Abstand nach oben: 30px. ja
+           - Wenn man die Maus drüber bewegt, soll er schwarz werden. ja 
+        */
+        .home-link {
+
+            background-color: #888;
+            font-size: 12px;
+            margin-top: 30px;
+	    text-decoration: none;
+		
+        }
+
+        .home-link:hover {
+
+            box-shadow: 5px 5px 15px 5px #000000; 
+	    text-decoration: none;
+
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>Auftrag: "Minka"</h1>
+    <p>Setzen Sie das geforderte Design um! (Nur Änderungen am CSS!)</p>
+
+    <hr>
+
+    <div class="card">
+        
+        <img 
+            src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80" 
+            alt="Katze Minka" 
+            class="avatar"
+        >
+        
+        <h2 class="tier-name">Minka</h2>
+        
+        <p>
+            Professionelle Mäusejägerin.<br>
+            Schläft gerne 16 Stunden am Tag.
+        </p>
+
+        <a href="#" class="btn">Leckerli geben</a>
+        
+    </div>
+
+    <div style="text-align: center;"> <a href="index.html" class="home-link">&larr; Zurück zur Startseite</a>
+    </div>
+
+</body>
+</html>
